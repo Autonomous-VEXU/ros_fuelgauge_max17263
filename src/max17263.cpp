@@ -11,8 +11,8 @@ public:
     configure_driver();
 
     this->declare_parameter<std::string>("dev_path", "/dev/i2c-1");
-    this->declare_parameter<std::string>("frame_id", "imu");
-    this->declare_parameter<std::string>("topic", "/imu");
+    this->declare_parameter<std::string>("frame_id", "max17263");
+    this->declare_parameter<std::string>("topic", "/fuel_gauge");
 
     std::string I2C_DEVICE_PATH;
     std::string ROS_FRAME_ID;
@@ -118,7 +118,7 @@ private:
     auto *this_ = reinterpret_cast<const MAX17263Node *>(user_data);
 
     const uint8_t reg = write_data[0];
-    return i2c_ioctl_read(&this_->i2c_dev, reg, read_data, read_len) > 0;
+    return i2c_read(&this_->i2c_dev, reg, read_data, read_len) > 0;
   }
 
   static int driver_i2c_write([[maybe_unused]] uint8_t addr, const uint8_t *buf,
@@ -127,7 +127,7 @@ private:
 
     const uint8_t reg = buf[0];
 
-    if (i2c_ioctl_write(&this_->i2c_dev, reg, &buf[1], len - 1) < 0) {
+    if (i2c_write(&this_->i2c_dev, reg, &buf[1], len - 1) < 0) {
       return 1;
     }
 
