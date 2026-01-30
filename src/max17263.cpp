@@ -8,8 +8,6 @@
 class MAX17263Node : public rclcpp::Node {
 public:
   MAX17263Node() : Node("max17263_node") {
-    configure_driver();
-
     this->declare_parameter<std::string>("dev_path", "/dev/i2c-1");
     this->declare_parameter<std::string>("frame_id", "max17263");
     this->declare_parameter<std::string>("topic", "/fuel_gauge");
@@ -38,6 +36,8 @@ public:
     i2c_dev.addr = MAX1726X_I2C_ADDR;
     i2c_dev.iaddr_bytes = 1;
     i2c_dev.page_bytes = 256;
+
+    configure_driver();
 
     ros_publisher = this->create_publisher<sensor_msgs::msg::BatteryState>(
         ROS_TOPIC_NAME, rclcpp::SensorDataQoS());
@@ -119,7 +119,7 @@ private:
     auto *this_ = reinterpret_cast<const MAX17263Node *>(user_data);
 
     const uint8_t reg = write_data[0];
-    return i2c_read(&this_->i2c_dev, reg, read_data, read_len) > 0;
+    return i2c_ioctl_read(&this_->i2c_dev, reg, read_data, read_len) > 0;
   }
 
   static int driver_i2c_write([[maybe_unused]] uint8_t addr, const uint8_t *buf,
@@ -128,7 +128,7 @@ private:
 
     const uint8_t reg = buf[0];
 
-    if (i2c_write(&this_->i2c_dev, reg, &buf[1], len - 1) < 0) {
+    if (i2c_ioctl_write(&this_->i2c_dev, reg, &buf[1], len - 1) < 0) {
       return 1;
     }
 
