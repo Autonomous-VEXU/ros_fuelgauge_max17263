@@ -61,6 +61,13 @@ private:
     max17263_init(&driver_handle, &driver_i2c_write, driver_i2c_read,
                   driver_delay_ms, this, R_SENSE);
 
+    uint16_t device_id;
+    max1726x_read_register(&driver_handle, 0x21, &device_id);
+    if (device_id != 0x4010) {
+        RCLCPP_INFO(this->get_logger(), "Device ID is wrong, got 0x%X, expected 0x4010", device_id);
+        exit(1);
+    }
+
     max1726x_ez_config_t config = {.charge_voltage_mv = 4200,
                                    .design_cap_mah = DESIGN_CAPACITY_mAh,
                                    .i_chg_term_ma = 100,
@@ -119,7 +126,11 @@ private:
     auto *this_ = reinterpret_cast<const MAX17263Node *>(user_data);
 
     const uint8_t reg = write_data[0];
-    return i2c_ioctl_read(&this_->i2c_dev, reg, read_data, read_len) > 0;
+    if (i2c_ioctl_read(&this_->i2c_dev, reg, read_data, read_len) < 0) {
+        return -1;
+    }
+
+    return 0;
   }
 
   static int driver_i2c_write([[maybe_unused]] uint8_t addr, const uint8_t *buf,
