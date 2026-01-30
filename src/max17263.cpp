@@ -63,8 +63,8 @@ private:
 
     uint16_t device_id;
     max1726x_read_register(&driver_handle, 0x21, &device_id);
-    if (device_id != 0x4010) {
-        RCLCPP_INFO(this->get_logger(), "Device ID is wrong, got 0x%X, expected 0x4010", device_id);
+    if (device_id != 0x4037) {
+        RCLCPP_INFO(this->get_logger(), "Device ID is wrong, got 0x%X, expected 0x4037", device_id);
         exit(1);
     }
 
@@ -81,9 +81,9 @@ private:
                                      .gr_en = true,
                                      .l_chg = true,
                                      .led_md = 1,
-                                     .ani_md = 3,
-                                     .ani_step = 2,
-                                     .led_timer = 5};
+                                     .ani_md = 0,
+                                     .ani_step = 6,
+                                     .led_timer = 4};
 
       max17263_write_led_cfg1(&driver_handle, &led_cfg);
     }
