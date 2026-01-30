@@ -33,6 +33,7 @@ public:
       exit(1);
     }
 
+    i2c_init_device(&i2c_dev);
     i2c_dev.bus = i2c_fd;
     i2c_dev.addr = MAX1726X_I2C_ADDR;
     i2c_dev.iaddr_bytes = 1;
