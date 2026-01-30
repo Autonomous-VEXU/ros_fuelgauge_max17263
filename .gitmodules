@@ -1,0 +1,6 @@
+[submodule "lib/driver"]
+	path = lib/driver
+	url = https://github.com/djava/max1726x-driver
+[submodule "lib/libi2c"]
+	path = lib/libi2c
+	url = https://github.com/amaork/libi2c
